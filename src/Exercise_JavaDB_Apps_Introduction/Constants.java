@@ -2,6 +2,7 @@ package Exercise_JavaDB_Apps_Introduction;
 
 enum Constants {
     ;
+    static final String COLUMN_LABEL_NAME = "name";
     static final String USER_KEY = "user";
     static final String USER_VALUE = "root";
 

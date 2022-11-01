@@ -1,5 +1,7 @@
 package Exercise_JavaDB_Apps_Introduction;
 
+import Exercise_JavaDB_Apps_Introduction.Constants;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
