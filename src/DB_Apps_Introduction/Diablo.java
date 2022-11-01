@@ -1,3 +1,5 @@
+package DB_Apps_Introduction;
+
 import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
