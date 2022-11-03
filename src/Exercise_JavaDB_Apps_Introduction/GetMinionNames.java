@@ -7,18 +7,18 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class GetMinionNames {
-    private static String GET_MINIONS_NAME_AND_AGE_BY_VILLAIN_ID = "select m.name, m.age" +
+    final private static String GET_MINIONS_NAME_AND_AGE_BY_VILLAIN_ID = "select m.name, m.age" +
             " from minions as m" +
             " join minions_villains mv on m.id = mv.minion_id" +
             " where mv.villain_id = ?;";
 
-    private static String GET_VILLAIN_NAME_BY_ID =
+    final private static String GET_VILLAIN_NAME_BY_ID =
             "select v.name from villains as v" +
             " where v.id = ?;";
-    private static String COLUMN_LABEL_AGE = "age";
-    private static String NO_VILLAIN_FORMAT = "No villain with ID %d exists in the database.";
-    private static String VILLAIN_FORMAT = "Villain: %s%n";
-    private static String MINION_FORMAT = "%d. %s %d%n";
+    final private static String COLUMN_LABEL_AGE = "age";
+    final private static String NO_VILLAIN_FORMAT = "No villain with ID %d exists in the database.";
+    final private static String VILLAIN_FORMAT = "Villain: %s%n";
+    final private static String MINION_FORMAT = "%d. %s %d%n";
 
     public static void main(String[] args) throws SQLException {
         final Connection connection = Utils.getSQLConnection();
@@ -52,3 +52,4 @@ public class GetMinionNames {
         connection.close();
     }
 }
+
