@@ -15,6 +15,8 @@ public class EmployeesFromDepartment {
 
         final String department = "Research and Development";
 
+        entityManager.getTransaction().begin();
+
         entityManager.createQuery("SELECT e FROM Employee e WHERE " +
                 "e.department.name = :dp " +
                 "ORDER BY e.salary, e.id", Employee.class)
@@ -23,7 +25,7 @@ public class EmployeesFromDepartment {
                 .forEach(e -> System.out.printf(PRINT_EMPL_FORMAT,
                         e.getFirstName(),
                         e.getLastName(),
-                        e.getDepartment(),
+                        e.getDepartment().getName(),
                         e.getSalary()));
 
         entityManager.getTransaction().commit();
