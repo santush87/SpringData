@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Scanner;
 
-@Component
+//@Component
 public class AppMain implements CommandLineRunner {
     private AddressService addressService;
     private EmployeeService employeeService;

@@ -1,7 +1,11 @@
 package com.example.modelmapper.entities.dtos;
 
+import com.google.gson.annotations.Expose;
+
 public class AddressDTO {
+    @Expose
     private String country;
+    @Expose
     private String city;
 
     public AddressDTO(String country, String city) {

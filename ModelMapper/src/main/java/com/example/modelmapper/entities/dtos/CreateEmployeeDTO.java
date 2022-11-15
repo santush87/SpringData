@@ -1,14 +1,19 @@
 package com.example.modelmapper.entities.dtos;
 
+import com.google.gson.annotations.Expose;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class CreateEmployeeDTO {
-
+    @Expose
     private String firstName;
+
     private String lastName;
+    @Expose
     private BigDecimal salary;
     private LocalDate birthday;
+    @Expose
     private AddressDTO address;
 
     public CreateEmployeeDTO(String firstName, String lastName, BigDecimal salary, LocalDate birthday, AddressDTO address) {
