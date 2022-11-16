@@ -1,9 +1,22 @@
 package com.example.modelmapper.entities.dtos;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class AddressXmlDto {
+    @XmlElement
     private int id;
+    @XmlElement
     private String country;
+    @XmlElement
     private String city;
+
+    public AddressXmlDto() {
+    }
 
     public AddressXmlDto(int id, String country, String city) {
         this.id = id;
