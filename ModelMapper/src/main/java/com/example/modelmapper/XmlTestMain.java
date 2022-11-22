@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+
 
 @Component
 public class XmlTestMain implements CommandLineRunner {
