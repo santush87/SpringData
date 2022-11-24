@@ -7,8 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -17,12 +17,11 @@ import javax.validation.constraints.Min;
 @Table(name = "cities")
 public class City extends BaseEntity{
 
-    @Min(value = 2)
-    @Max(value = 60)
+    @Size(min = 2, max = 60)
     @Column(unique = true, nullable = false)
     private String cityName;
 
-    @Min(value = 2)
+    @Size(min = 2)
     @Column(columnDefinition = "TEXT")
     private String description;
 

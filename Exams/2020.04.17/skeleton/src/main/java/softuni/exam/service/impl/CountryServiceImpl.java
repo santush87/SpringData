@@ -3,6 +3,7 @@ package softuni.exam.service.impl;
 import com.google.gson.Gson;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import softuni.exam.config.Messages;
 import softuni.exam.models.dto.CountryImportDTO;
 import softuni.exam.models.entity.Country;
 import softuni.exam.repository.CountryRepository;
@@ -14,11 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static softuni.exam.config.Messages.INVALID_COUNTRY;
-import static softuni.exam.config.Messages.VALID_COUNTRY_FORMAT;
 
 @Service
 public class CountryServiceImpl implements CountryService {
@@ -51,23 +49,50 @@ public class CountryServiceImpl implements CountryService {
     public String importCountries() throws IOException {
         final StringBuilder builder = new StringBuilder();
 
-        final List<Country> countries = Arrays.stream(gson.fromJson(readCountriesFromFile(), CountryImportDTO[].class))
-                .filter(countryImportDTO -> {
-                            boolean isValid = this.validationUtils.isValid(countryImportDTO);
+        final List<CountryImportDTO> countries = Arrays.stream(gson.fromJson(readCountriesFromFile(), CountryImportDTO[].class)).toList();
 
-                            if (isValid) {
-                                builder.append(String.format(VALID_COUNTRY_FORMAT,
-                                        countryImportDTO.getCountryName(),
-                                        countryImportDTO.getCurrency()));
-                            } else {
-                                builder.append(INVALID_COUNTRY);
-                            }
-                            return isValid;
-                        }
-                ).map(countryImportDTO -> this.mapper.map(countryImportDTO, Country.class))
-                .toList();
+        for (CountryImportDTO country : countries) {
+            boolean isValid = this.validationUtils.isValid(country);
 
-        this.countryRepository.saveAllAndFlush(countries);
+            if (this.countryRepository.findFirstByCountryName(country.getCountryName()).isPresent()) {
+                continue;
+            }
+            if (isValid) {
+                builder.append(String.format(Messages.VALID_COUNTRY_FORMAT,
+                        country.getCountryName(),
+                        country.getCurrency())).append(System.lineSeparator());
+
+                this.countryRepository.saveAndFlush(this.mapper.map(country, Country.class));
+
+            } else {
+                builder.append(INVALID_COUNTRY).append(System.lineSeparator());
+            }
+
+        }
         return builder.toString();
     }
+
+
+//                .filter(countryDTO -> {
+//                            boolean isValid = this.validationUtils.isValid(countryDTO);
+//
+//                            if (this.countryRepository.findFirstByCountryName(countryDTO.getCountryName()).isPresent()) {
+//                                isValid = false;
+//                            }
+//                            if (isValid) {
+//                                builder.append(String.format(VALID_COUNTRY_FORMAT,
+//                                        countryDTO.getCountryName(),
+//                                        countryDTO.getCurrency()));
+//
+//                                this.countryRepository.saveAndFlush(this.mapper.map(countryDTO, Country.class));
+//
+//                            } else {
+//                                builder.append(INVALID_COUNTRY);
+//                            }
+//                            return isValid;
+//                        })
+//                    .map(countryImportDTO -> this.mapper.map(countryImportDTO, Country.class))
+//                .toList();
+
+
 }
