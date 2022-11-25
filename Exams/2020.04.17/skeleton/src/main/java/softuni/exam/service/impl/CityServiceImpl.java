@@ -2,8 +2,9 @@ package softuni.exam.service.impl;
 
 import com.google.gson.Gson;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import softuni.exam.models.dto.CityImportDTO;
+import softuni.exam.models.dto.CityImportDto;
 import softuni.exam.models.entity.City;
 import softuni.exam.repository.CityRepository;
 import softuni.exam.repository.CountryRepository;
@@ -12,12 +13,12 @@ import softuni.exam.util.ValidationUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
 import static softuni.exam.config.Messages.INVALID_CITY;
 import static softuni.exam.config.Messages.VALID_CITY_FORMAT;
+import static softuni.exam.config.Paths.CITY_PATH;
 
 @Service
 public class CityServiceImpl implements CityService {
@@ -27,10 +28,11 @@ public class CityServiceImpl implements CityService {
     private final Gson gson;
     private final ValidationUtils validationUtils;
 
-    public CityServiceImpl(CityRepository cityRepository, CountryRepository countryRepository, ModelMapper mapper, Gson gson, ValidationUtils validationUtils) {
+    @Autowired
+    public CityServiceImpl(CityRepository cityRepository, CountryRepository countryRepository, ModelMapper modelMapper, Gson gson, ValidationUtils validationUtils) {
         this.cityRepository = cityRepository;
         this.countryRepository = countryRepository;
-        this.mapper = mapper;
+        this.mapper = modelMapper;
         this.gson = gson;
         this.validationUtils = validationUtils;
     }
@@ -42,15 +44,19 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public String readCitiesFileContent() throws IOException {
-        return Files.readString(Path.of("src/main/resources/files/json/cities.json"));
+        return Files.readString(CITY_PATH);
     }
 
     @Override
     public String importCities() throws IOException {
-        final StringBuilder builder = new StringBuilder();
 
-        final List<CityImportDTO> cities = Arrays.stream(gson.fromJson(readCitiesFileContent(), CityImportDTO[].class)).toList();
-        for (CityImportDTO city : cities) {
+        final StringBuilder stringBuilder = new StringBuilder();
+
+
+        final List<CityImportDto> cities = Arrays.stream(gson.fromJson(readCitiesFileContent(), CityImportDto[].class))
+                .toList();
+
+        for (CityImportDto city : cities) {
             boolean isValid = this.validationUtils.isValid(city);
 
             if (this.cityRepository.findFirstByCityName(city.getCityName()).isPresent()) {
@@ -58,9 +64,7 @@ public class CityServiceImpl implements CityService {
             }
 
             if (isValid) {
-                builder.append(String.format(VALID_CITY_FORMAT,
-                        city.getCityName(),
-                        city.getPopulation())).append(System.lineSeparator());
+                stringBuilder.append(String.format(VALID_CITY_FORMAT, city.getCityName(), city.getPopulation())).append(System.lineSeparator());
 
                 if (this.countryRepository.findById(city.getCountry()).isPresent()) {
                     City cityToSave = this.mapper.map(city, City.class);
@@ -68,41 +72,15 @@ public class CityServiceImpl implements CityService {
                     cityToSave.setCountry(this.countryRepository.findById(city.getCountry()).get());
 
                     this.cityRepository.save(cityToSave);
-
                 } else {
-
-                    builder.append("Error").append(System.lineSeparator());
+                    stringBuilder.append("Error").append(System.lineSeparator());
                 }
+
             } else {
-                builder.append(INVALID_CITY).append(System.lineSeparator());
+                stringBuilder.append(INVALID_CITY).append(System.lineSeparator());
             }
-
         }
-        return builder.toString();
+
+        return stringBuilder.toString();
     }
-//        Arrays.stream(gson.fromJson(readCitiesFileContent(), CityImportDTO[].class))
-//                .map(dto -> {
-//                    boolean isValid = this.validationUtils.isValid(dto);
-//
-//                    if (this.cityRepository.findFirstByCityName(dto.getCityName()).isPresent()) {
-//                        isValid = false;
-//                    }
-//
-//                    if (isValid) {
-//                        builder.append(String.format(VALID_CITY_FORMAT,
-//                                dto.getCityName(),
-//                                dto.getPopulation()));
-//
-//                        if (this.countryRepository.getById(dto.getCountry()).isPresent()) {
-//                            City cityToSave = this.mapper.map(dto, City.class);
-//                            cityToSave.setCountry(this.countryRepository.getById(dto.getCountry()).get());
-//                        }
-//                    } else {
-//                        builder.append(INVALID_CITY);
-//                    }
-//
-//
-//                });
-
-
 }

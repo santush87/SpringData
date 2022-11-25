@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 
 @Component
-public class XmlParcer {
+public class xmlParser {
     public <T> T fromFile(File pathFile, Class<T> object) throws JAXBException, FileNotFoundException {
         JAXBContext context = JAXBContext.newInstance(object);
         Unmarshaller unmarshaller = context.createUnmarshaller();
