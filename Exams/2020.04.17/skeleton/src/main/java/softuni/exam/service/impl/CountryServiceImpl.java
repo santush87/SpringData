@@ -67,7 +67,6 @@ public class CountryServiceImpl implements CountryService {
             } else {
                 builder.append(INVALID_COUNTRY).append(System.lineSeparator());
             }
-
         }
         return builder.toString();
     }
