@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class LaptopServiceImpl implements LaptopService {
@@ -93,6 +94,30 @@ public class LaptopServiceImpl implements LaptopService {
 
     @Override
     public String exportBestLaptops() {
-        return null;
+        StringBuilder builder = new StringBuilder();
+
+
+        List<Laptop> laptops = this.laptopRepository
+                .findAllByOrderByCpuSpeedDescRamDescStorageDescMacAddressAsc();
+
+        for (Laptop laptop : laptops) {
+            builder.append(String.format("Laptop - %s",laptop.getMacAddress()))
+                    .append(System.lineSeparator())
+                    .append(String.format("*Cpu speed - %.2f", laptop.getCpuSpeed()))
+                    .append(System.lineSeparator())
+                    .append(String.format("**Ram - %d", laptop.getRam()))
+                    .append(System.lineSeparator())
+                    .append(String.format("***Storage - %d", laptop.getStorage()))
+                    .append(System.lineSeparator())
+                    .append(String.format("****Price - %.2f", laptop.getPrice()))
+                    .append(System.lineSeparator())
+                    .append(String.format("#Shop name - %s", laptop.getShop().getName()))
+                    .append(System.lineSeparator())
+                    .append(String.format("##Town - %s", laptop.getShop().getTown().getName()))
+                    .append(System.lineSeparator())
+                    .append(System.lineSeparator());
+
+        }
+        return builder.toString();
     }
 }
