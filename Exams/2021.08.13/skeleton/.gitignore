@@ -4,3 +4,4 @@ target
 test
 *.html
 *.css
+*.class

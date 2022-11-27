@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
-import java.time.LocalTime;
+import java.time.LocalDate;
 
 @Setter
 @Getter
@@ -32,7 +32,7 @@ public class Customer extends Base{
     private String email;
 
     @Column(nullable = false)
-    private LocalTime registeredOn;
+    private LocalDate registeredOn;
 
     @ManyToOne
     private Town town;
