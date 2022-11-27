@@ -1,0 +1,6 @@
+.idea
+*.xml
+target
+test
+*.html
+*.css
