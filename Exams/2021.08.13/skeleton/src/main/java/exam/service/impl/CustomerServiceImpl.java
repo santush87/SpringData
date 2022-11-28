@@ -53,7 +53,8 @@ public class CustomerServiceImpl implements CustomerService {
     public String importCustomers() throws IOException {
         StringBuilder builder = new StringBuilder();
 
-        final List<CustomerImportDTO> importDTO = Arrays.stream(gson.fromJson(readCustomersFileContent(), CustomerImportDTO[].class)).toList();
+        final List<CustomerImportDTO> importDTO =
+                Arrays.stream(gson.fromJson(readCustomersFileContent(), CustomerImportDTO[].class)).toList();
 
         for (CustomerImportDTO dto : importDTO) {
             boolean isValid = this.validationUtils.isValid(dto);
