@@ -1,21 +1,46 @@
 package softuni.exam.service.impl;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import softuni.exam.models.dto.OfferImportDTO;
+import softuni.exam.models.dto.OfferRootImportDTO;
+import softuni.exam.models.entity.Agent;
+import softuni.exam.models.entity.Apartment;
+import softuni.exam.models.entity.Offer;
+import softuni.exam.repository.AgentRepository;
+import softuni.exam.repository.ApartmentRepository;
 import softuni.exam.repository.OfferRepository;
 import softuni.exam.service.OfferService;
+import softuni.exam.util.ValidationUtils;
+import softuni.exam.util.XmlParser;
 
 import javax.xml.bind.JAXBException;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OfferServiceImpl implements OfferService {
 
     private final OfferRepository offerRepository;
+    private final AgentRepository agentRepository;
+    private final ApartmentRepository apartmentRepository;
+    private final XmlParser xmlParser;
+    private final ValidationUtils validationUtils;
+    private final ModelMapper mapper;
 
-    public OfferServiceImpl(OfferRepository offerRepository) {
+    public OfferServiceImpl(OfferRepository offerRepository, AgentRepository agentRepository, ApartmentRepository apartmentRepository, XmlParser xmlParser, ValidationUtils validationUtils, ModelMapper mapper) {
         this.offerRepository = offerRepository;
+        this.agentRepository = agentRepository;
+        this.apartmentRepository = apartmentRepository;
+        this.xmlParser = xmlParser;
+        this.validationUtils = validationUtils;
+        this.mapper = mapper;
     }
 
     @Override
@@ -30,11 +55,48 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     public String importOffers() throws IOException, JAXBException {
-        return null;
+        StringBuilder builder = new StringBuilder();
+
+        final File file = Path.of("D:\\SoftUni\\SpringData\\Exams\\2022.04.02\\skeleton\\src\\main\\resources\\files\\xml\\offers.xml").toFile();
+        final OfferRootImportDTO importDTO = xmlParser.fromFile(file, OfferRootImportDTO.class);
+        final List<OfferImportDTO> dtos = importDTO.getOffers();
+
+        for (OfferImportDTO dto : dtos) {
+            boolean isValid = this.validationUtils.isValid(dto);
+
+            if (isValid) {
+                Optional<Agent> agent = this.agentRepository.findByFirstName(dto.getAgent().getFirstName());
+                if (!agent.isPresent()){
+                    builder.append("Invalid offer").append(System.lineSeparator());
+
+                } else {
+                    Optional<Apartment> apartment = this.apartmentRepository.findById(dto.getApartment().getId());
+                    Offer offerToSave = this.mapper.map(dto, Offer.class);
+                    offerToSave.setPrice(dto.getPrice());
+                    offerToSave.setApartment(apartment.get());
+                    offerToSave.setPublishedOn(LocalDate.parse(dto.getPublishedOn(),
+                            DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    offerToSave.setAgent(agent.get());
+
+                    this.offerRepository.save(offerToSave);
+
+                    builder.append(String.format("Successfully imported offer %.2f",
+                                    dto.getPrice()))
+                            .append(System.lineSeparator());
+                }
+            } else {
+                builder.append("Invalid offer").append(System.lineSeparator());
+            }
+        }
+
+        return builder.toString();
     }
 
     @Override
     public String exportOffers() {
-        return null;
+        StringBuilder builder = new StringBuilder();
+
+
+        return builder.toString();
     }
 }

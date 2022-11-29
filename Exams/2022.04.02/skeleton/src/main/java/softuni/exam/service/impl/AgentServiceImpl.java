@@ -58,7 +58,7 @@ public class AgentServiceImpl implements AgentService {
             if (isValid) {
                 Optional<Agent> optFirstName = this.agentRepository.findByFirstName(dto.getFirstName());
 
-                if (optFirstName.isPresent()) {
+                if (!optFirstName.isPresent()) {
                     builder.append("Invalid agent").append(System.lineSeparator());
 
                 } else {

@@ -22,7 +22,6 @@ public class Offer extends Base{
     @Column(nullable = false)
     private double price;
 
-    //"dd/MM/yyyy"
     @Column(nullable = false)
     private LocalDate publishedOn;
 
