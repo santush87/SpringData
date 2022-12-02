@@ -76,10 +76,7 @@ public class OfferServiceImpl implements OfferService {
                 } else {
                     Optional<Apartment> apartment = this.apartmentRepository.findById(dto.getApartment().getId());
                     Offer offerToSave = this.mapper.map(dto, Offer.class);
-//                    offerToSave.setPrice(dto.getPrice());
                     offerToSave.setApartment(apartment.get());
-//                    offerToSave.setPublishedOn(LocalDate.parse(dto.getPublishedOn(),
-//                            DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                     offerToSave.setAgent(agent);
 
                     this.offerRepository.save(offerToSave);

@@ -84,4 +84,9 @@ public class AgentServiceImpl implements AgentService {
 
         return builder.toString();
     }
+
+    @Override
+    public Agent getAgentByName(String name) {
+        return this.agentRepository.findAgentByFirstName(name).orElse(null);
+    }
 }
