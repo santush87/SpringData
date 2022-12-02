@@ -21,7 +21,7 @@ public class OfferImportDTO {
 
     @NotNull
     @XmlElement
-    private Agent agent;
+    private AgentName agent;
 
     @NotNull
     @XmlElement

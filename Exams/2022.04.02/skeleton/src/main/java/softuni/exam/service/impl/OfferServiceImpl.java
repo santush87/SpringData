@@ -10,6 +10,7 @@ import softuni.exam.models.entity.Offer;
 import softuni.exam.repository.AgentRepository;
 import softuni.exam.repository.ApartmentRepository;
 import softuni.exam.repository.OfferRepository;
+import softuni.exam.service.AgentService;
 import softuni.exam.service.OfferService;
 import softuni.exam.util.ValidationUtils;
 import softuni.exam.util.XmlParser;
@@ -29,14 +30,16 @@ public class OfferServiceImpl implements OfferService {
 
     private final OfferRepository offerRepository;
     private final AgentRepository agentRepository;
+    private final AgentService agentService;
     private final ApartmentRepository apartmentRepository;
     private final XmlParser xmlParser;
     private final ValidationUtils validationUtils;
     private final ModelMapper mapper;
 
-    public OfferServiceImpl(OfferRepository offerRepository, AgentRepository agentRepository, ApartmentRepository apartmentRepository, XmlParser xmlParser, ValidationUtils validationUtils, ModelMapper mapper) {
+    public OfferServiceImpl(OfferRepository offerRepository, AgentRepository agentRepository, AgentService agentService, ApartmentRepository apartmentRepository, XmlParser xmlParser, ValidationUtils validationUtils, ModelMapper mapper) {
         this.offerRepository = offerRepository;
         this.agentRepository = agentRepository;
+        this.agentService = agentService;
         this.apartmentRepository = apartmentRepository;
         this.xmlParser = xmlParser;
         this.validationUtils = validationUtils;
@@ -58,25 +61,26 @@ public class OfferServiceImpl implements OfferService {
         StringBuilder builder = new StringBuilder();
 
         final File file = Path.of("D:\\SoftUni\\SpringData\\Exams\\2022.04.02\\skeleton\\src\\main\\resources\\files\\xml\\offers.xml").toFile();
-        final OfferRootImportDTO importDTO = xmlParser.fromFile(file, OfferRootImportDTO.class);
+        final OfferRootImportDTO importDTO =
+                xmlParser.fromFile(file, OfferRootImportDTO.class);
         final List<OfferImportDTO> dtos = importDTO.getOffers();
 
         for (OfferImportDTO dto : dtos) {
             boolean isValid = this.validationUtils.isValid(dto);
 
             if (isValid) {
-                Optional<Agent> agent = this.agentRepository.findByFirstName(dto.getAgent().getFirstName());
-                if (!agent.isPresent()){
+                Agent agent = this.agentService.getAgentByName(dto.getAgent().getName());
+                if (agent == null){
                     builder.append("Invalid offer").append(System.lineSeparator());
 
                 } else {
                     Optional<Apartment> apartment = this.apartmentRepository.findById(dto.getApartment().getId());
                     Offer offerToSave = this.mapper.map(dto, Offer.class);
-                    offerToSave.setPrice(dto.getPrice());
+//                    offerToSave.setPrice(dto.getPrice());
                     offerToSave.setApartment(apartment.get());
-                    offerToSave.setPublishedOn(LocalDate.parse(dto.getPublishedOn(),
-                            DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-                    offerToSave.setAgent(agent.get());
+//                    offerToSave.setPublishedOn(LocalDate.parse(dto.getPublishedOn(),
+//                            DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    offerToSave.setAgent(agent);
 
                     this.offerRepository.save(offerToSave);
 
